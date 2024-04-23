@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/index": {
+      "name": "/index",
+      "lambdaFunction": "test02",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

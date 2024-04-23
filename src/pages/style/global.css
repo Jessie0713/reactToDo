@@ -1,0 +1,19 @@
+html,
+body,
+#___gatsby,
+#gatsby-focus-wrapper {
+  height: 100%;
+  letter-spacing: 0.02rem !important;
+}
+
+a {
+  display: block;
+  text-decoration: none;
+}
+
+body {
+  background-color: #efe8e8cd;
+}
+.customRounded fieldset {
+  border-radius: 16px !important; /* 使用 !important 確保覆蓋 MUI 樣式 */
+}

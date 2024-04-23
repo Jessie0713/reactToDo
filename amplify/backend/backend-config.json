@@ -1,0 +1,43 @@
+{
+  "api": {
+    "todolist": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "test02"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    }
+  },
+  "function": {
+    "test02": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_test02_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "test02"
+        }
+      ]
+    },
+    "AMPLIFY_function_test02_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "test02"
+        }
+      ]
+    }
+  }
+}
