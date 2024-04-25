@@ -7,12 +7,13 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import ListItemText from '@mui/material/ListItemText'
 import CloseIcon from '@mui/icons-material/Close'
 import Hider from './Hider'
-import { post, del } from 'aws-amplify/api'
+import { post, del, put } from 'aws-amplify/api'
 
 export default function ListItems({ item, getItem, setGetItem, index }) {
   const label = { inputProps: { 'aria-label': 'Checkbox demo' } }
   const [edit, setEdit] = useState(true)
   const [editText, setEditText] = useState('')
+  const [check, setCheck] = useState(item.finish == 'yes' ? true : false)
   return (
     <Hider show={edit}>
       <ListItem
@@ -46,7 +47,6 @@ export default function ListItems({ item, getItem, setGetItem, index }) {
                     options: {
                       queryParams: {
                         id: item.id,
-                        finish: item.finish,
                       },
                     },
                   })
@@ -68,7 +68,26 @@ export default function ListItems({ item, getItem, setGetItem, index }) {
           </Box>
         }
       >
-        <Checkbox {...label} defaultChecked />
+        <Checkbox
+          checked={check}
+          onChange={async (e) => {
+            setCheck(e.target.checked)
+            let response = put({
+              apiName: 'todolist',
+              path: '/index',
+              options: {
+                body: {
+                  id: item.id,
+                  finish: e.target.checked ? 'yes' : 'no',
+                },
+              },
+            })
+            let result = await response.response
+            result = await result.body.json().then((res) => {
+              console.log('res', res)
+            })
+          }}
+        />
         <ListItemText primary={item.text} />
       </ListItem>
       <ListItem
@@ -100,7 +119,7 @@ export default function ListItems({ item, getItem, setGetItem, index }) {
               setGetItem(getItem)
               setEdit(true)
 
-              const response = post({
+              let response = post({
                 apiName: 'todolist',
                 path: '/index',
                 options: {
