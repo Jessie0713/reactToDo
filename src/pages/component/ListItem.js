@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Box, TextField, IconButton, Checkbox } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -7,13 +7,34 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import ListItemText from '@mui/material/ListItemText'
 import CloseIcon from '@mui/icons-material/Close'
 import Hider from './Hider'
-import { post, del, put } from 'aws-amplify/api'
+import { del, put } from 'aws-amplify/api'
+import CircularProgress from '@mui/material/CircularProgress'
 
 export default function ListItems({ item, getItem, setGetItem, index }) {
-  const label = { inputProps: { 'aria-label': 'Checkbox demo' } }
+  useEffect(() => {
+    setCheck(item.finish == 'yes' ? true : false)
+  }, item.check)
   const [edit, setEdit] = useState(true)
   const [editText, setEditText] = useState('')
   const [check, setCheck] = useState(item.finish == 'yes' ? true : false)
+  const [itemLoad, setItemLoad] = useState(false)
+  const handleUpdateItem = async (text, finish) => {
+    let response = put({
+      apiName: 'todolist',
+      path: '/index',
+      options: {
+        body: {
+          id: item.id,
+          text,
+          finish,
+        },
+      },
+    })
+    let result = await response.response
+    result = await result.body.json().then((res) => {
+      console.log('res', res)
+    })
+  }
   return (
     <Hider show={edit}>
       <ListItem
@@ -26,45 +47,50 @@ export default function ListItems({ item, getItem, setGetItem, index }) {
           mb: '2px',
         }}
         secondaryAction={
-          <Box>
-            <IconButton
-              edge='end'
-              onClick={() => {
-                setEditText(item.text)
-                setEdit(false)
-              }}
-            >
-              <ModeEditIcon />
-            </IconButton>
-            <IconButton
-              edge='end'
-              onClick={async () => {
-                console.log(item.id, item.finish)
-                try {
-                  const response = del({
-                    apiName: 'todolist',
-                    path: '/index',
-                    options: {
-                      queryParams: {
-                        id: item.id,
-                      },
-                    },
-                  })
-                  let result = await response.response
-                  result = await result.body.json().then((res) => {
-                    console.log('res', res)
-                    let items = getItem.filter((row) => row.id !== item.id)
-                    setGetItem(items)
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Hider show={itemLoad}>
+              <CircularProgress size={25} />
+              <Box>
+                <IconButton
+                  onClick={() => {
+                    setEditText(item.text)
+                    setEdit(false)
+                  }}
+                >
+                  <ModeEditIcon />
+                </IconButton>
+                <IconButton
+                  onClick={async () => {
+                    setItemLoad(true)
+                    console.log(item.id, item.finish)
+                    try {
+                      const response = del({
+                        apiName: 'todolist',
+                        path: '/index',
+                        options: {
+                          queryParams: {
+                            id: item.id,
+                          },
+                        },
+                      })
+                      let result = await response.response
+                      result = await result.body.json().then((res) => {
+                        console.log('res', res)
+                        let items = getItem.filter((row) => row.id !== item.id)
+                        setGetItem(items)
+                        setItemLoad(false)
 
-                    // getItems()
-                  })
-                } catch (e) {
-                  console.log(e)
-                }
-              }}
-            >
-              <DeleteIcon />
-            </IconButton>
+                        // getItems()
+                      })
+                    } catch (e) {
+                      console.log(e)
+                    }
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
+            </Hider>
           </Box>
         }
       >
@@ -72,20 +98,22 @@ export default function ListItems({ item, getItem, setGetItem, index }) {
           checked={check}
           onChange={async (e) => {
             setCheck(e.target.checked)
-            let response = put({
-              apiName: 'todolist',
-              path: '/index',
-              options: {
-                body: {
-                  id: item.id,
-                  finish: e.target.checked ? 'yes' : 'no',
-                },
-              },
+            let finish = e.target.checked ? 'yes' : 'no'
+            getItem[index].finish = finish
+
+            await handleUpdateItem(item.text, finish)
+            let items = [...getItem].sort((a, b) => {
+              if (a.finish === 'no' && b.finish === 'yes') {
+                return -1
+              } else if (a.finish === 'yes' && b.finish === 'no') {
+                return 1
+              } else {
+                return b.id - a.id
+              }
             })
-            let result = await response.response
-            result = await result.body.json().then((res) => {
-              console.log('res', res)
-            })
+            // console.log('test', test)
+            await setGetItem(items)
+            // setCheck(test[item.id].check)
           }}
         />
         <ListItemText primary={item.text} />
@@ -118,22 +146,7 @@ export default function ListItems({ item, getItem, setGetItem, index }) {
               getItem[index].text = editText
               setGetItem(getItem)
               setEdit(true)
-
-              let response = post({
-                apiName: 'todolist',
-                path: '/index',
-                options: {
-                  body: {
-                    id: item.id,
-                    finish: item.finish,
-                    text: editText,
-                  },
-                },
-              })
-              let result = await response.response
-              result = await result.body.json().then((res) => {
-                console.log('res', res)
-              })
+              handleUpdateItem(editText, check == true ? 'yes' : 'no')
             }}
           >
             <CheckIcon />
