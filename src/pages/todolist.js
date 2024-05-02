@@ -71,7 +71,7 @@ const Todolist = () => {
           <Typography
             variant='h2'
             sx={{ textAlign: 'center' }}
-            color={'primary.main'}
+            // color={'primary.main'}
           >
             To do List
           </Typography>

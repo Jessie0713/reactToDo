@@ -12,9 +12,12 @@ a {
 }
 
 body {
-  background-color: #efe8e8cd;
+  /* background-color: #efe8e8cd; */
   margin: 0;
 }
 .customRounded fieldset {
   border-radius: 16px !important; /* 使用 !important 確保覆蓋 MUI 樣式 */
+}
+.css-199i82d-MuiCardActions-root > :not(style) ~ :not(style) {
+  margin-left: 0px !important;
 }
