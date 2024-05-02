@@ -26,6 +26,9 @@ const IndexPage = () => {
   const [confirmation, setConfirmation] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [newEmail, setnewEmail] = useState('')
+  const [newPassword, setnewPassword] = useState('')
+  const [confirmationCode, setconfirmationCode] = useState('')
   return (
     <Box
       sx={{
@@ -108,16 +111,51 @@ const IndexPage = () => {
                 註冊
               </Typography>
               <Typography>email : </Typography>
-              <TextField size='small' variant='outlined' sx={{ mb: '10px' }} />
+              <TextField
+                size='small'
+                variant='outlined'
+                sx={{ mb: '10px' }}
+                value={newEmail}
+                onChange={(e) => {
+                  setnewEmail(e.target.value)
+                }}
+              />
               <Typography>密碼 : </Typography>
-              <TextField size='small' variant='outlined' />
+              <TextField
+                size='small'
+                variant='outlined'
+                value={newPassword}
+                onChange={(e) => {
+                  setnewPassword(e.target.value)
+                }}
+              />
             </CardContent>
             <CardActions sx={{ display: 'flex', flexDirection: 'column' }}>
               <Button
                 sx={{ width: '100%', mb: '15px', color: 'white' }}
                 variant='contained'
-                onClick={() => {
+                onClick={async () => {
+                  console.log(newEmail, newPassword)
                   setConfirmation(false)
+                  try {
+                    const { isSignUpComplete, userId, nextStep } = await signUp(
+                      {
+                        username: newEmail,
+                        password: newPassword,
+                        options: {
+                          userAttributes: {
+                            email: newEmail,
+                          },
+                          // optional
+                          autoSignIn: true, // or SignInOptions e.g { authFlowType: "USER_SRP_AUTH" }
+                        },
+                      }
+                    )
+
+                    console.log(userId)
+                  } catch (error) {
+                    console.log('error signing up:', error)
+                  }
                 }}
               >
                 驗證電子郵件地址
@@ -129,12 +167,42 @@ const IndexPage = () => {
               <Typography variant='h3' sx={{ mb: '5px' }}>
                 輸入驗證碼
               </Typography>
-              <TextField size='small' variant='outlined' sx={{ mb: '10px' }} />
+              <TextField
+                size='small'
+                variant='outlined'
+                sx={{ mb: '10px' }}
+                value={confirmationCode}
+                onChange={(e) => {
+                  setconfirmationCode(e.target.value)
+                }}
+              />
             </CardContent>
             <CardActions sx={{ display: 'flex', flexDirection: 'column' }}>
               <Button
                 sx={{ width: '100%', mb: '15px', color: 'white' }}
                 variant='contained'
+                onClick={async () => {
+                  console.log('confirmation code', confirmationCode)
+                  try {
+                    const { isSignUpComplete, nextStep } = await confirmSignUp({
+                      username: newEmail,
+                      confirmationCode, //email驗證碼
+                    })
+                    console.log('isSignUpComplete', isSignUpComplete)
+                    if (isSignUpComplete) {
+                      try {
+                        await autoSignIn()
+                        // const { username } = await getCurrentUser()
+                        // console.log(`The username: ${username}`)
+                        // console.log('成功登入')
+                      } catch (error) {
+                        console.log(error)
+                      }
+                    }
+                  } catch (error) {
+                    console.log('error confirming sign up', error)
+                  }
+                }}
               >
                 確認
               </Button>
@@ -142,6 +210,27 @@ const IndexPage = () => {
           </Card>
         </Hider>
       </Hider>
+      <Button
+        onClick={async () => {
+          try {
+            await signOut()
+            console.log('成功登出')
+          } catch (error) {
+            console.log('error signing out: ', error)
+          }
+        }}
+      >
+        登出
+      </Button>
+      <Button
+        onClick={async () => {
+          const { username } = await getCurrentUser()
+          console.log(`The username: ${username}`)
+          console.log('成功登入')
+        }}
+      >
+        test 登入有沒有成功
+      </Button>
     </Box>
   )
 }
