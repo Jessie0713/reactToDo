@@ -15,6 +15,15 @@
       "service": "API Gateway"
     }
   },
+  "auth": {
+    "todolistaf5b961b": {
+      "customAuth": false,
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito",
+      "serviceType": "imported"
+    }
+  },
   "function": {
     "test02": {
       "build": true,
@@ -23,6 +32,94 @@
     }
   },
   "parameters": {
+    "AMPLIFY_auth_todolistaf5b961b_allowUnauthenticatedIdentities": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "todolistaf5b961b"
+        }
+      ]
+    },
+    "AMPLIFY_auth_todolistaf5b961b_authRoleArn": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "todolistaf5b961b"
+        }
+      ]
+    },
+    "AMPLIFY_auth_todolistaf5b961b_authRoleName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "todolistaf5b961b"
+        }
+      ]
+    },
+    "AMPLIFY_auth_todolistaf5b961b_identityPoolId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "todolistaf5b961b"
+        }
+      ]
+    },
+    "AMPLIFY_auth_todolistaf5b961b_identityPoolName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "todolistaf5b961b"
+        }
+      ]
+    },
+    "AMPLIFY_auth_todolistaf5b961b_nativeClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "todolistaf5b961b"
+        }
+      ]
+    },
+    "AMPLIFY_auth_todolistaf5b961b_unauthRoleArn": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "todolistaf5b961b"
+        }
+      ]
+    },
+    "AMPLIFY_auth_todolistaf5b961b_unauthRoleName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "todolistaf5b961b"
+        }
+      ]
+    },
+    "AMPLIFY_auth_todolistaf5b961b_userPoolId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "todolistaf5b961b"
+        }
+      ]
+    },
+    "AMPLIFY_auth_todolistaf5b961b_userPoolName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "todolistaf5b961b"
+        }
+      ]
+    },
+    "AMPLIFY_auth_todolistaf5b961b_webClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "todolistaf5b961b"
+        }
+      ]
+    },
     "AMPLIFY_function_test02_deploymentBucketName": {
       "usedBy": [
         {

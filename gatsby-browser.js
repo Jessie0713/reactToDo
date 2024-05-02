@@ -1,4 +1,4 @@
-import awsmobile from './aws-exports'
+import awsmobile from './src/aws-exports'
 import { Amplify } from 'aws-amplify'
 import GlobalContextProvider from './src/context/GlobalContextProvider'
 import React from 'react'

@@ -20,6 +20,21 @@
       },
       "api": {
         "todolist": {}
+      },
+      "auth": {
+        "todolistaf5b961b": {
+          "userPoolId": "ap-southeast-2_ed4jZlrLP",
+          "userPoolName": "todolist",
+          "webClientId": "3g11p00mdqdvghvgtsat1j44oj",
+          "nativeClientId": "3g11p00mdqdvghvgtsat1j44oj",
+          "identityPoolId": "ap-southeast-2:e0c8e30a-a6c5-45d4-8960-1618a5d689f2",
+          "identityPoolName": "todolist",
+          "allowUnauthenticatedIdentities": false,
+          "authRoleArn": "arn:aws:iam::637423654242:role/service-role/todolist",
+          "authRoleName": "todolist",
+          "unauthRoleArn": "arn:aws:iam::637423654242:role/service-role/todolist",
+          "unauthRoleName": "todolist"
+        }
       }
     }
   }
