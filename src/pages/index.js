@@ -31,6 +31,7 @@ const IndexPage = () => {
   const [confirmationCode, setconfirmationCode] = useState('')
   const [verifyerr, setverifyerr] = useState('')
   const [loginerr, setloginerr] = useState('')
+  const [confirmationCodeErr, setconfirmationCodeErr] = useState('')
   return (
     <Box
       sx={{
@@ -70,37 +71,8 @@ const IndexPage = () => {
               }}
             />
             <Typography color='error.main' sx={{ fontSize: '12px' }}>
-              {loginerr ===
-              'UserUnAuthenticatedException: User needs to be authenticated to call this API.'
-                ? '帳戶未驗證，請到信箱收驗證碼'
-                : loginerr}
+              {loginerr}
             </Typography>
-            <Button
-              variant='contained'
-              size='small'
-              sx={{
-                color: 'white',
-                display:
-                  loginerr ===
-                  'UserUnAuthenticatedException: User needs to be authenticated to call this API.'
-                    ? 'block'
-                    : 'none',
-              }}
-              onClick={async () => {
-                try {
-                  const { destination } = await resendSignUpCode({
-                    username: email,
-                  })
-                  console.log('destination', destination)
-                  setlogin(false)
-                  setConfirmation(false)
-                } catch (err) {
-                  console.log('verify code error', err)
-                }
-              }}
-            >
-              重新發送驗證碼
-            </Button>
           </CardContent>
           <CardActions sx={{ display: 'flex', flexDirection: 'column' }}>
             <Button
@@ -119,8 +91,22 @@ const IndexPage = () => {
                   console.log('成功登入')
                   navigate('/todolist')
                 } catch (error) {
-                  console.log('error signing in', error.message)
+                  console.log(
+                    'error signing in',
+                    error.message,
+                    typeof error.message
+                  )
                   setloginerr(error.toString())
+                  if (
+                    error.message ===
+                    'User needs to be authenticated to call this API.'
+                  ) {
+                    setconfirmationCodeErr('帳戶未驗證，請到信箱收驗證碼')
+                    setnewEmail('')
+                    setlogin(false)
+                    setConfirmation(false)
+                  }
+                  // setconfirmationCodeErr(err.toString())
                 }
               }}
             >
@@ -213,8 +199,10 @@ const IndexPage = () => {
               </Button>
             </CardActions>
           </Card>
-          <Card sx={{ borderRadius: '12px' }}>
-            <CardContent sx={{ mb: '20px' }}>
+          <Card sx={{ borderRadius: '12px', width: '20%' }}>
+            <CardContent
+              sx={{ mb: '20px', display: 'flex', flexDirection: 'column' }}
+            >
               <Typography variant='h3' sx={{ mb: '5px' }}>
                 輸入驗證碼
               </Typography>
@@ -227,6 +215,32 @@ const IndexPage = () => {
                   setconfirmationCode(e.target.value)
                 }}
               />
+              <Button
+                size='small'
+                sx={{
+                  width: '60%',
+                }}
+                variant='outlined'
+                onClick={async () => {
+                  setconfirmationCodeErr('')
+                  try {
+                    const { destination } = await resendSignUpCode({
+                      username: newEmail === '' ? email : newEmail,
+                    })
+                    console.log('destination', destination)
+                    setlogin(false)
+                    setConfirmation(false)
+                  } catch (err) {
+                    console.log('verify code error', err)
+                    setconfirmationCodeErr(err.toString())
+                  }
+                }}
+              >
+                重新發送驗證碼
+              </Button>
+              <Typography color='error.main' sx={{ fontSize: '12px' }}>
+                {confirmationCodeErr}
+              </Typography>
             </CardContent>
             <CardActions sx={{ display: 'flex', flexDirection: 'column' }}>
               <Button
@@ -244,30 +258,42 @@ const IndexPage = () => {
                       console.log()
                       setlogin(true)
                       setConfirmation(true)
-                    }
-
-                    if (isSignUpComplete) {
+                      setloginerr('')
+                    } else if (isSignUpComplete && newEmail !== '') {
                       try {
                         await autoSignIn()
-                        // const { username } = await getCurrentUser()
-                        // console.log(`The username: ${username}`)
-                        // console.log('成功登入')
+                        const { username } = await getCurrentUser()
+                        console.log(`The username: ${username}`)
+                        console.log('成功登入')
+                        navigate('/todolist')
                       } catch (error) {
                         console.log(error)
+                        setconfirmationCodeErr(error.toString())
                       }
                     }
                   } catch (error) {
                     console.log('error confirming sign up', error)
+                    setconfirmationCodeErr(error.toString())
                   }
                 }}
               >
                 確認
               </Button>
+              <Button
+                sx={{ width: '100%' }}
+                variant='outlined'
+                onClick={() => {
+                  setlogin(true)
+                  setConfirmation(false)
+                }}
+              >
+                返回登入頁面
+              </Button>
             </CardActions>
           </Card>
         </Hider>
       </Hider>
-      <Button
+      {/* <Button
         onClick={async () => {
           try {
             await signOut()
@@ -288,6 +314,30 @@ const IndexPage = () => {
       >
         test 登入有沒有成功
       </Button>
+      <Button
+        onClick={async () => {
+          setlogin(false)
+          setConfirmation(false)
+        }}
+      >
+        驗證碼頁面
+      </Button>
+      <Button
+        onClick={async () => {
+          setlogin(true)
+          setConfirmation(true)
+        }}
+      >
+        登入頁面
+      </Button>
+      <Button
+        onClick={async () => {
+          setlogin(false)
+          setConfirmation(true)
+        }}
+      >
+        新增頁面頁面
+      </Button> */}
     </Box>
   )
 }

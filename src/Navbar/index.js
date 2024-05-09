@@ -76,9 +76,6 @@ export default function Navbar() {
                 onClick={async () => {
                   const currentConfig = Amplify.getConfig()
                   console.log('currentConfig', currentConfig)
-                  let username = 'jessie07133@gmail.com'
-                  let confirmationCode = '671987'
-                  let password = '1Qaz@wsx'
                 }}
               >
                 log in
