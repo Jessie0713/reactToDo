@@ -9,24 +9,22 @@ import MenuIcon from '@mui/icons-material/Menu'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
+import { navigate } from 'gatsby'
 import DialogTitle from '@mui/material/DialogTitle'
 import TextField from '@mui/material/TextField'
-import {
-  signUp,
-  confirmSignUp,
-  autoSignIn,
-  signIn,
-  SignInInput,
-  getCurrentUser,
-  signOut,
-} from 'aws-amplify/auth'
+import { signOut } from 'aws-amplify/auth'
 import { Amplify } from 'aws-amplify'
 export default function Navbar() {
   const [open, setOpen] = React.useState(false)
 
-  const handleClickOpen = () => {
-    setOpen(true)
+  const handleLogOut = async () => {
+    try {
+      await signOut()
+      console.log('成功登出')
+      await navigate('/')
+    } catch (error) {
+      console.log('error signing out: ', error)
+    }
   }
 
   const handleClose = () => {
@@ -52,8 +50,8 @@ export default function Navbar() {
             <MenuIcon sx={{ color: 'primary.main' }} />
           </IconButton>
 
-          <Button variant='outlined' onClick={handleClickOpen}>
-            Login
+          <Button variant='outlined' onClick={handleLogOut}>
+            Logout
           </Button>
           <Dialog
             open={open}
@@ -81,69 +79,6 @@ export default function Navbar() {
                   let username = 'jessie07133@gmail.com'
                   let confirmationCode = '671987'
                   let password = '1Qaz@wsx'
-                  // 1. sign up
-                  // try {
-                  //   const { isSignUpComplete, userId, nextStep } = await signUp(
-                  //     {
-                  //       username,
-                  //       password,
-                  //       options: {
-                  //         userAttributes: {
-                  //           email: username,
-                  //         },
-                  //         // optional
-                  //         autoSignIn: true, // or SignInOptions e.g { authFlowType: "USER_SRP_AUTH" }
-                  //       },
-                  //     }
-                  //   )
-
-                  //   console.log(userId)
-                  // } catch (error) {
-                  //   console.log('error signing up:', error)
-                  // }
-
-                  // 2.sign up complete
-                  // try {
-                  //   const { isSignUpComplete, nextStep } = await confirmSignUp({
-                  //     username,
-                  //     confirmationCode,
-                  //   })
-                  // } catch (error) {
-                  //   console.log('error confirming sign up', error)
-                  // }
-
-                  //3.
-                  // try {
-                  //   const signInOutput = await autoSignIn()
-                  //   // handle sign-in steps
-                  // } catch (error) {
-                  //   console.log(error)
-                  // }
-
-                  // try {
-                  //   const { username, userId, signInDetails } =
-                  //     await getCurrentUser()
-                  //   console.log(`The username: ${username}`)
-                  //   console.log(`The userId: ${userId}`)
-                  //   console.log(`The signInDetails: ${signInDetails}`)
-                  // } catch (err) {
-                  //   console.log(err)
-                  // }
-
-                  // 4.sign in
-                  // try {
-                  //   const { isSignedIn, nextStep } = await signIn({
-                  //     username,
-                  //     password,
-                  //   })
-                  // } catch (error) {
-                  //   console.log('error signing in', error)
-                  // }
-                  // try {
-                  //   await signOut()
-                  // } catch (error) {
-                  //   console.log('error signing out: ', error)
-                  // }
                 }}
               >
                 log in

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import Link from '@mui/material/Link'
 import Hider from './component/Hider'
+import { navigate } from 'gatsby'
 
 import {
   Box,
@@ -16,7 +16,6 @@ import {
   confirmSignUp,
   autoSignIn,
   signIn,
-  SignInInput,
   getCurrentUser,
   signOut,
 } from 'aws-amplify/auth'
@@ -29,6 +28,7 @@ const IndexPage = () => {
   const [newEmail, setnewEmail] = useState('')
   const [newPassword, setnewPassword] = useState('')
   const [confirmationCode, setconfirmationCode] = useState('')
+  const [verifyerr, setverifyerr] = useState('')
   return (
     <Box
       sx={{
@@ -40,7 +40,7 @@ const IndexPage = () => {
       }}
     >
       <Hider show={newAccount}>
-        <Card sx={{ borderRadius: '12px' }}>
+        <Card sx={{ borderRadius: '12px', width: '20%' }}>
           <CardContent sx={{ mb: '20px' }}>
             <Typography variant='h3' sx={{ mb: '5px' }}>
               登入
@@ -48,6 +48,7 @@ const IndexPage = () => {
             <Typography>email : </Typography>
             <TextField
               size='small'
+              fullWidth
               variant='outlined'
               sx={{ mb: '10px' }}
               value={email}
@@ -59,6 +60,7 @@ const IndexPage = () => {
             <TextField
               size='small'
               variant='outlined'
+              fullWidth
               value={password}
               type='password'
               onChange={(e) => {
@@ -81,14 +83,10 @@ const IndexPage = () => {
                   const { username } = await getCurrentUser()
                   console.log(`The username: ${username}`)
                   console.log('成功登入')
+                  navigate('/todolist')
                 } catch (error) {
                   console.log('error signing in', error)
                 }
-                // try {
-                //   await signOut()
-                // } catch (error) {
-                //   console.log('error signing out: ', error)
-                // }
               }}
             >
               登入
@@ -105,7 +103,7 @@ const IndexPage = () => {
           </CardActions>
         </Card>
         <Hider show={confirmation}>
-          <Card sx={{ borderRadius: '12px' }}>
+          <Card sx={{ borderRadius: '12px', width: '20%' }}>
             <CardContent sx={{ mb: '20px' }}>
               <Typography variant='h3' sx={{ mb: '5px' }}>
                 註冊
@@ -119,6 +117,7 @@ const IndexPage = () => {
                 onChange={(e) => {
                   setnewEmail(e.target.value)
                 }}
+                fullWidth
               />
               <Typography>密碼 : </Typography>
               <TextField
@@ -128,7 +127,11 @@ const IndexPage = () => {
                 onChange={(e) => {
                   setnewPassword(e.target.value)
                 }}
+                fullWidth
               />
+              <Typography color='error.main' sx={{ fontSize: '12px' }}>
+                {verifyerr}
+              </Typography>
             </CardContent>
             <CardActions sx={{ display: 'flex', flexDirection: 'column' }}>
               <Button
@@ -136,7 +139,7 @@ const IndexPage = () => {
                 variant='contained'
                 onClick={async () => {
                   console.log(newEmail, newPassword)
-                  setConfirmation(false)
+
                   try {
                     const { isSignUpComplete, userId, nextStep } = await signUp(
                       {
@@ -153,12 +156,25 @@ const IndexPage = () => {
                     )
 
                     console.log(userId)
+                    // setConfirmation(false)
                   } catch (error) {
                     console.log('error signing up:', error)
+                    console.log(typeof error)
+                    console.log(JSON.stringify(error), error.toString())
+                    setverifyerr(error.toString())
                   }
                 }}
               >
                 驗證電子郵件地址
+              </Button>
+              <Button
+                sx={{ width: '100%' }}
+                variant='outlined'
+                onClick={() => {
+                  setNewAccount(true)
+                }}
+              >
+                返回登入頁面
               </Button>
             </CardActions>
           </Card>
