@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import Hider from './component/Hider'
 import { navigate } from 'gatsby'
 
@@ -18,10 +18,11 @@ import {
   signIn,
   getCurrentUser,
   signOut,
+  resendSignUpCode,
 } from 'aws-amplify/auth'
 
 const IndexPage = () => {
-  const [newAccount, setNewAccount] = useState(true)
+  const [login, setlogin] = useState(true)
   const [confirmation, setConfirmation] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -29,6 +30,7 @@ const IndexPage = () => {
   const [newPassword, setnewPassword] = useState('')
   const [confirmationCode, setconfirmationCode] = useState('')
   const [verifyerr, setverifyerr] = useState('')
+  const [loginerr, setloginerr] = useState('')
   return (
     <Box
       sx={{
@@ -39,7 +41,7 @@ const IndexPage = () => {
         backgroundColor: '#efe8e8cd',
       }}
     >
-      <Hider show={newAccount}>
+      <Hider show={login}>
         <Card sx={{ borderRadius: '12px', width: '20%' }}>
           <CardContent sx={{ mb: '20px' }}>
             <Typography variant='h3' sx={{ mb: '5px' }}>
@@ -67,6 +69,38 @@ const IndexPage = () => {
                 setPassword(e.target.value)
               }}
             />
+            <Typography color='error.main' sx={{ fontSize: '12px' }}>
+              {loginerr ===
+              'UserUnAuthenticatedException: User needs to be authenticated to call this API.'
+                ? '帳戶未驗證，請到信箱收驗證碼'
+                : loginerr}
+            </Typography>
+            <Button
+              variant='contained'
+              size='small'
+              sx={{
+                color: 'white',
+                display:
+                  loginerr ===
+                  'UserUnAuthenticatedException: User needs to be authenticated to call this API.'
+                    ? 'block'
+                    : 'none',
+              }}
+              onClick={async () => {
+                try {
+                  const { destination } = await resendSignUpCode({
+                    username: email,
+                  })
+                  console.log('destination', destination)
+                  setlogin(false)
+                  setConfirmation(false)
+                } catch (err) {
+                  console.log('verify code error', err)
+                }
+              }}
+            >
+              重新發送驗證碼
+            </Button>
           </CardContent>
           <CardActions sx={{ display: 'flex', flexDirection: 'column' }}>
             <Button
@@ -85,7 +119,8 @@ const IndexPage = () => {
                   console.log('成功登入')
                   navigate('/todolist')
                 } catch (error) {
-                  console.log('error signing in', error)
+                  console.log('error signing in', error.message)
+                  setloginerr(error.toString())
                 }
               }}
             >
@@ -95,7 +130,7 @@ const IndexPage = () => {
               sx={{ width: '100%' }}
               variant='outlined'
               onClick={() => {
-                setNewAccount(false)
+                setlogin(false)
               }}
             >
               創建一個新帳戶
@@ -156,11 +191,11 @@ const IndexPage = () => {
                     )
 
                     console.log(userId)
-                    // setConfirmation(false)
+                    setConfirmation(false)
                   } catch (error) {
-                    console.log('error signing up:', error)
-                    console.log(typeof error)
-                    console.log(JSON.stringify(error), error.toString())
+                    // console.log('error signing up:', error)
+                    // console.log(typeof error)
+                    // console.log(JSON.stringify(error), error.toString())
                     setverifyerr(error.toString())
                   }
                 }}
@@ -171,7 +206,7 @@ const IndexPage = () => {
                 sx={{ width: '100%' }}
                 variant='outlined'
                 onClick={() => {
-                  setNewAccount(true)
+                  setlogin(true)
                 }}
               >
                 返回登入頁面
@@ -201,10 +236,16 @@ const IndexPage = () => {
                   console.log('confirmation code', confirmationCode)
                   try {
                     const { isSignUpComplete, nextStep } = await confirmSignUp({
-                      username: newEmail,
+                      username: newEmail === '' ? email : newEmail,
                       confirmationCode, //email驗證碼
                     })
                     console.log('isSignUpComplete', isSignUpComplete)
+                    if (newEmail === '') {
+                      console.log()
+                      setlogin(true)
+                      setConfirmation(true)
+                    }
+
                     if (isSignUpComplete) {
                       try {
                         await autoSignIn()
