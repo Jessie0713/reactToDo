@@ -4,7 +4,7 @@ import GlobalContextProvider from './src/context/GlobalContextProvider'
 import React from 'react'
 import './src/pages/style/global.css'
 import { ThemeProvider } from '@mui/material'
-import theme from './src/pages/theme/theme'
+import theme from './src/pages/theme/theme.js'
 
 export const wrapRootElement = ({ element }) => {
   Amplify.configure(awsmobile)
