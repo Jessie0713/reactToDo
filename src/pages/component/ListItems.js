@@ -10,14 +10,21 @@ import Hider from './Hider'
 import { del, put } from 'aws-amplify/api'
 import CircularProgress from '@mui/material/CircularProgress'
 
-export default function ListItems({ item, getItem, setGetItem, index }) {
-  useEffect(() => {
-    setCheck(item.finish === 'yes' ? true : false)
-  }, item.check)
+export default function ListItems({
+  item = { text: '', finish: '', id: '' },
+  getItem,
+  setGetItem,
+  index,
+}) {
   const [edit, setEdit] = useState(true)
   const [editText, setEditText] = useState('')
   const [check, setCheck] = useState(item.finish === 'yes' ? true : false)
   const [itemLoad, setItemLoad] = useState(false)
+
+  useEffect(() => {
+    setCheck(item.finish === 'yes' ? true : false)
+  }, item.check)
+
   const handleUpdateItem = async (text, finish) => {
     let response = put({
       apiName: 'todolist',

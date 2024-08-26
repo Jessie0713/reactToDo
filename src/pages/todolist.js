@@ -10,6 +10,7 @@ const Todolist = () => {
   const [addItem, setAddItem] = useState('')
   const [getItem, setGetItem] = useState([])
   const [addLoad, setAddLoad] = useState(false)
+  const [itemList, setItemList] = useState([{ id: '', finish: '', text: '' }])
   const handlePost = async () => {
     try {
       let id = Date.now().toString()
@@ -138,7 +139,7 @@ const Todolist = () => {
                     item={item}
                     getItem={getItem}
                     setGetItem={setGetItem}
-                    index={index}
+                    key={index}
                   />
                 )
               })}
